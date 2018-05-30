@@ -5,7 +5,7 @@
   <meta property="og:title" content="Rättvisa Bensinpriser" />
   <meta property="og:url" content="bensinpriser.aiman.space" />
   <meta property="og:image" content="bensinpriser.jpg" />
-  <meta property="og:description" content="Betalar vi överpris för bensinen i Sverige?" />
+  <meta property="og:description" content="Betalar vi överpris för bensinen i Sverige, med tanke på vår minimala befolkning?" />
   <meta property="og:locale" content="sv_SE" />
   <title>Rättvisa Bensinpriser</title>
   <style type="text/css">
@@ -31,6 +31,9 @@
   table {
     font-size: 1.5em;
     width: 100%;
+  }
+  .header th {
+    cursor: pointer;
   }
   .country {
     width: 40%;
@@ -95,6 +98,8 @@
 let data = [];
 let filterText = "";
 
+let order = "";
+
 let usa = {name: "United States of America", population: 326000000};
 let russia = {name: "Russian Federation", population: 144000000};
 
@@ -129,22 +134,31 @@ let update = () => {
   let table = document.querySelector("table");
 
 
-  let manipulatedData = data;
+  let manipulatedData = data.map(x => x);
   if (filterText !== "") manipulatedData = manipulatedData.filter(d => d.name.toLowerCase().includes(filterText));
+
+  if (order === "population") {
+    manipulatedData = manipulatedData.sort((a, b) => b.population - a.population)
+  }
 
   table.textContent = "";
   let header = document.createElement("tr");
+  header.classList = ["header"];
+
   let countryHeader = document.createElement("th");
   countryHeader.textContent = "Land";
   countryHeader.classList = ["country"];
+  countryHeader.onclick = () => { order = ""; update(); };
   header.append(countryHeader)
   let populationHeader = document.createElement("th");
   populationHeader.textContent = "Befolkning";
   populationHeader.classList = ["population"];
+  populationHeader.onclick = () => { order = "population"; update(); };
   header.append(populationHeader)
   let petroleumPriceHeader = document.createElement("th");
   petroleumPriceHeader.textContent = "Rättvist bensinpris";
   petroleumPriceHeader.classList = ["petroleumPrice"];
+  petroleumPriceHeader.onclick = () => { order = "population"; update(); };
   header.append(petroleumPriceHeader)
 
 
