@@ -15,20 +15,28 @@
   .contentContainer {
     width: 500px;
   }
+  .filter {
+    font-size: 1.75em;
+  }
   img {
     width: 400px;
     height: auto;
     box-shadow: 0 0 50px black;
   }
+  table {
+    font-size: 1.5em;
+    width: 100%;
+  }
   .country {
-    width: 160px;
+    width: 40%;
   }
   .population {
     text-align: right;
-    width: 100px;
+    width: 30%;
   }
   .petroleumPrice {
     text-align: right;
+    width: 30%;
   }
   td {
     padding-left: 5px;
@@ -44,6 +52,7 @@
 <div class="container">
   <div class="contentContainer">
     <h1>Rättvisa Bensinpriser</h1>
+    <hr>
     <div class="textContainer">
       <p>Bensinpriset i <strong>USA</strong> är <strong>8.08 kr/litern</strong>, och dom är <strong>326</strong> miljoner invånare.
         <br>Bensinpriset i <strong>Ryssland</strong> är <strong>5.80 kr/litern</strong>, på <strong>144</strong> miljoner invånare.
@@ -54,21 +63,23 @@
         Bor du också i ett land med odemokratiskt prissatt bensin? I tabellen nedan så kan du se vad det egentligen borde kosta hos dig!
       </p>
     </div>
+
+    <hr>
+
+    <input type="text" placeholder="Filtrera bland länder" class="filter">
     <table>
-      <tr>
-        <th>Land</th>
-        <th>Befolkning</th>
-        <th>Rättvist bensinpris</th>
-      </tr>
     </table>
+    <hr>
     <br>
     <h2>Källhänvisning</h2>
     <img src="bensinpris.jpg">
     <br>
     <br>
+    <hr>
     <h2>OBS!</h2>
     <p>Det här är självfallet satir. Man får jättegärna tycka att bensinpriset i Sverige är för högt och argumentera varför det är för högt. Men undvik gärna tramsargument som att befolkningens storlek skulle spela roll. Snälla, höj nivån. Det behövs <strong>fler vuxna i rummet</strong>, och det kan börja med <strong>dig</strong>.</p>
     <br>
+    <hr>
     <h2>Kakor</h2>
     <p>Inga kakor.</p>
   </div>
@@ -76,30 +87,22 @@
 
 </body>
 <script type="text/javascript">
+let data = [];
+let filterText = "";
+
 fetch("https://restcountries.eu/rest/v2/all")
   .then(x => x.json())
   .then(countries => {
-    let data = countries.map(c => ({name: c.name, population: c.population}));
+    data = countries.map(c => ({name: c.name, population: c.population}));
     console.log(data)
-    let table = document.querySelector("table");
-    data.forEach(d => {
-      let row = document.createElement("tr");
-      let country = document.createElement("td");
-      let population = document.createElement("td");
-      let petroleumPrice = document.createElement("td");
-      country.textContent = d.name;
-      country.classList = ["country"];
-      population.textContent = d.population;
-      population.classList = ["population"];
-      petroleumPrice.textContent = calculatePrice(d.population);
-
-      petroleumPrice.classList = ["petroleumPrice"];
-      row.append(country);
-      row.append(population);
-      row.append(petroleumPrice);
-      table.append(row);
-    })
+    update();
   });
+
+let filter = document.querySelector(".filter");
+filter.oninput = e => {
+  filterText = filter.value.toLowerCase();
+  update();
+}
 
 let calculatePrice = (population) => {
   let price = 4 + 0.015*population/1000000;
@@ -110,5 +113,50 @@ let calculatePrice = (population) => {
   price = price.join(".");
   return price + " kr";
 }
+
+let update = () => {
+  let table = document.querySelector("table");
+
+
+  let manipulatedData = data;
+  if (filterText !== "") manipulatedData = manipulatedData.filter(d => d.name.toLowerCase().includes(filterText));
+
+  table.textContent = "";
+  let header = document.createElement("tr");
+  let countryHeader = document.createElement("th");
+  countryHeader.textContent = "Land";
+  countryHeader.classList = ["country"];
+  header.append(countryHeader)
+  let populationHeader = document.createElement("th");
+  populationHeader.textContent = "Befolkning";
+  populationHeader.classList = ["population"];
+  header.append(populationHeader)
+  let petroleumPriceHeader = document.createElement("th");
+  petroleumPriceHeader.textContent = "Rättvist bensinpris";
+  petroleumPriceHeader.classList = ["petroleumPrice"];
+  header.append(petroleumPriceHeader)
+
+
+  table.append(header);
+
+  manipulatedData.forEach(d => {
+    let row = document.createElement("tr");
+    row.classList = ["row"]
+    let country = document.createElement("td");
+    let population = document.createElement("td");
+    let petroleumPrice = document.createElement("td");
+    country.textContent = d.name;
+    country.classList = ["country"];
+    population.textContent = d.population;
+    population.classList = ["population"];
+    petroleumPrice.textContent = calculatePrice(d.population);
+    petroleumPrice.classList = ["petroleumPrice"];
+    row.append(country);
+    row.append(population);
+    row.append(petroleumPrice);
+    table.append(row);
+  });
+}
+
 </script>
 </html>
