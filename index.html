@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <title>Rättvisa Bensinpriser</title>
+  <style type="text/css">
+  .container {
+    display: flex;
+    justify-content: center;
+  }
+  h1 {
+    display: flex;
+    justify-content: center;
+  }
+  .contentContainer {
+    width: 500px;
+  }
+  img {
+    width: 400px;
+    height: auto;
+    box-shadow: 0 0 50px black;
+  }
+  .country {
+    width: 160px;
+  }
+  .population {
+    text-align: right;
+    width: 100px;
+  }
+  .petroleumPrice {
+    text-align: right;
+  }
+  td {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="contentContainer">
+    <h1>Rättvisa Bensinpriser</h1>
+    <div class="textContainer">
+      <p>Bensinpriset i <strong>USA</strong> är <strong>8.08 kr/litern</strong>, och dom är <strong>326</strong> miljoner invånare.
+        <br>Bensinpriset i <strong>Ryssland</strong> är <strong>5.80 kr/litern</strong>, på <strong>144</strong> miljoner invånare.
+        <br>I <strong>Sverige</strong> är priset hela <strong><em>15.73 kr/litern</em></strong>, på endast <strong><em>10</em></strong> miljoner invånare<strong>!!!</strong>
+        <br>Det här är självklart orimligt. Med hjälp av <a href="https://www.matteboken.se/lektioner/matte-2/linjara-funktioner-och-ekvationssystem/linjara-funktioner">räta linjens ekvation</a> så kan vi konstatera att det svenska priset bör ligga på exakt 4.14 kr/litern. Att bensinpriset inte är linjärt proportionellt mot landets storlek, det är ingenting annat än vidrig socialism och ett hot mot vår demokrati.
+        <br>
+        <br>
+        Bor du också i ett land med odemokratiskt prissatt bensin? I tabellen nedan så kan du se vad det egentligen borde kosta hos dig!
+      </p>
+    </div>
+    <table>
+      <tr>
+        <th>Land</th>
+        <th>Befolkning</th>
+        <th>Rättvist bensinpris</th>
+      </tr>
+    </table>
+    <br>
+    <h2>Källhänvisning</h2>
+    <img src="bensinpris.jpg">
+    <br>
+    <br>
+    <h2>OBS!</h2>
+    <p>Det här är självfallet satir. Man får jättegärna tycka att bensinpriset i Sverige är för högt och argumentera varför det är för högt. Men undvik gärna tramsargument som att befolkningens storlek skulle spela roll. Snälla, höj nivån. Det behövs <strong>fler vuxna i rummet</strong>, och det kan börja med <strong>dig</strong>.</p>
+    <br>
+    <h2>Kakor</h2>
+    <p>Inga kakor.</p>
+  </div>
+</div>
+
+</body>
+<script type="text/javascript">
+fetch("https://restcountries.eu/rest/v2/all")
+  .then(x => x.json())
+  .then(countries => {
+    let data = countries.map(c => ({name: c.name, population: c.population}));
+    console.log(data)
+    let table = document.querySelector("table");
+    data.forEach(d => {
+      let row = document.createElement("tr");
+      let country = document.createElement("td");
+      let population = document.createElement("td");
+      let petroleumPrice = document.createElement("td");
+      country.textContent = d.name;
+      country.classList = ["country"];
+      population.textContent = d.population;
+      population.classList = ["population"];
+      petroleumPrice.textContent = calculatePrice(d.population);
+
+      petroleumPrice.classList = ["petroleumPrice"];
+      row.append(country);
+      row.append(population);
+      row.append(petroleumPrice);
+      table.append(row);
+    })
+  });
+
+let calculatePrice = (population) => {
+  let price = 4 + 0.015*population/1000000;
+  if (price === 4) return "4.00 kr";
+  price = price + "";
+  price = price.split(".");
+  price[1] = price[1].slice(0,2);
+  price = price.join(".");
+  return price + " kr";
+}
+</script>
+</html>
