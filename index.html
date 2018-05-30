@@ -93,10 +93,15 @@
 let data = [];
 let filterText = "";
 
+let usa = {name: "United States of America", population: 326000000};
+let russia = {name: "Russian Federation", population: 144000000};
+
 fetch("https://restcountries.eu/rest/v2/all")
   .then(x => x.json())
   .then(countries => {
     data = countries.map(c => ({name: c.name, population: c.population}));
+    usa.population = data.find(d => d.name === "United States of America").population;
+    russia.population = data.find(d => d.name === "Russian Federation").population;
     console.log(data)
     update();
   });
@@ -108,8 +113,9 @@ filter.oninput = e => {
 }
 
 let calculatePrice = (population) => {
-  let price = 4 + 0.015*population/1000000;
-  if (price === 4) return "4.00 kr";
+  let k = (8.08-5.80)/(usa.population - russia.population)
+  let price = 4 + k*population;
+  if (price === Math.trunc(price)) return "4.00 kr";
   price = price + "";
   price = price.split(".");
   price[1] = price[1].slice(0,2);
